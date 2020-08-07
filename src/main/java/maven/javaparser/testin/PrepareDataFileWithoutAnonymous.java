@@ -9,7 +9,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import com.opencsv.CSVWriter;
 
 public class PrepareDataFileWithoutAnonymous {
@@ -22,13 +25,16 @@ public class PrepareDataFileWithoutAnonymous {
 		int count=0;
 		try
 		{
+			
 			File read_File = new File(READ_FILE_PATH);
 			File write_File = new File(WRITE_FILE_PATH);
 			
 			FileReader reader = new FileReader(read_File);
 			FileWriter writer = new FileWriter(write_File);
 			
-			CSVReader csvReader = new CSVReader(reader);
+			CSVParser csvParser = new CSVParserBuilder().withEscapeChar('\0').build();
+			CSVReader csvReader = new CSVReaderBuilder(reader).withCSVParser(csvParser).build();
+			
 			CSVWriter csvWriter = new CSVWriter(writer);
 			
 			String[] record;
@@ -41,8 +47,17 @@ public class PrepareDataFileWithoutAnonymous {
 				{
 					csvWriter.writeNext(record);
 					count++;
+					for(int i=0;i<record.length;i++)
+					{
+						System.out.print(record[i]+ " ");
+					}
+					
+					System.out.println();
 				}
 			}
+			csvWriter.flush();
+			csvReader.close();
+			csvWriter.close();
 		}
 		catch(Exception e)
 		{
